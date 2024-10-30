@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import MoneyTracker from '../../components/MoneyTracker';
+import MoneyTracker from '../../../components/MoneyTracker';
 
 const IndexScreen = () => {
   return (
