@@ -12,18 +12,19 @@ import { Drawer } from "expo-router/drawer";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import {
   widthPercentageToDP as wp,
-  
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import PropTypes from 'prop-types';
+import { COLORS } from '../../constants/theme';
 
 const CustomDrawerContent = (props) => {
+  const [selectedItem, setSelectedItem] = React.useState(null);
+
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContent}>
-
       <StatusBar
         barStyle="light-content"
-        backgroundColor="#000000"
+        backgroundColor={COLORS.background} 
         translucent={true}
         hidden={false}
       />
@@ -38,38 +39,48 @@ const CustomDrawerContent = (props) => {
       <View style={styles.drawerItemsContainer}>
         {props.state.routes
           .filter((route) => route.name !== "(tabs)")
-          .map((route, index) => (
+          .map((route) => (
             <DrawerItem
               key={route.key}
               label={
                 props.descriptors[route.key].options.drawerLabel || route.name
               }
               icon={props.descriptors[route.key].options.drawerIcon}
-              onPress={() => props.navigation.navigate(route.name)}
+              labelStyle={{
+                color: selectedItem === route.key ? COLORS.secondary : COLORS.text.primary, 
+                fontWeight: selectedItem === route.key ? 'bold' : 'normal', 
+              }}
+              onPress={() => {
+                setSelectedItem(route.key);
+                props.navigation.navigate(route.name);
+              }}
+              style={{
+                backgroundColor: selectedItem === route.key ? COLORS.primary : COLORS.lightbackground, 
+              }}
             />
           ))}
         <DrawerItem
           label="Help"
           icon={() => (
-            <MaterialIcons name="help-outline" size={wp("6%")} color="#555" />
+            <MaterialIcons name="help-outline" size={wp("6%")} color={'#000000'} />
           )}
           onPress={() => Linking.openURL("https://forms.gle/5iJKWrfCXMsviTiL8")}
         />
         <DrawerItem
           label="Feedback"
           icon={() => (
-            <MaterialIcons name="feedback" size={wp("6%")} color="#555" />
+            <MaterialIcons name="feedback" size={wp("6%")} color={'#000000'} />
           )}
           onPress={() => Linking.openURL("https://forms.gle/5iJKWrfCXMsviTiL8")}
         />
         <DrawerItem
           label="Languages"
-          icon={() => <Ionicons name="language" size={wp("6%")} color="#555" />}
+          icon={() => <Ionicons name="language" size={wp("6%")} color={'#000000'} />}
           onPress={() => console.log("Language options pressed")}
         />
         <DrawerItem
           label="Export Data"
-          icon={() => <Ionicons name="exit" size={wp("6%")} color="#555" />}
+          icon={() => <Ionicons name="exit" size={wp("6%")} color={'#000000'} />}
           onPress={() => console.log("Export options pressed")}
         />
         <DrawerItem
@@ -78,15 +89,12 @@ const CustomDrawerContent = (props) => {
             <MaterialIcons name="logout" size={wp("6%")} color="#ff6b6b" />
           )}
           onPress={() => console.log("Logout pressed")}
-          labelStyle={{ color: "#ff6b6b" }}
+          labelStyle={{ color: "#ff6b6b" }} 
         />
       </View>
     </DrawerContentScrollView>
   );
-  
 };
-
-
 
 export default function Layout({ navigation }) {
   return (
@@ -98,7 +106,7 @@ export default function Layout({ navigation }) {
         },
         swipeEnabled: true,
         drawerType: "front",
-        overlayColor: "rgba(0,0,0,0.7)",
+        overlayColor: "rgba(0,0,0,0.5)",
         hideStatusBar: false,
         statusBarAnimation: "slide",
       }}
@@ -112,16 +120,16 @@ export default function Layout({ navigation }) {
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: '#fff',
     paddingTop: hp("2%"),
   },
   profileContainer: {
     alignItems: "center",
     padding: wp("5%"),
     paddingTop: hp("5%"),
-    backgroundColor: "#2f2f2f",
+    backgroundColor: COLORS.lightbackground,
     borderBottomWidth: 1,
-    borderBottomColor: "#3f3f3f",
+    borderBottomColor: COLORS.lightbackground,
   },
   profileImage: {
     width: wp("20%"),
@@ -131,13 +139,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   userName: {
-    fontSize: wp("4.5%"),
+    fontSize: wp("5%"),
     fontWeight: "600",
-    color: "#fff",
+    color: COLORS.text.primary,
   },
   userEmail: {
     fontSize: wp("3.5%"),
-    color: "#ddd",
+    color: COLORS.text.secondary,
     marginTop: hp("0.5%"),
   },
   drawerItemsContainer: {
