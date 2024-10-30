@@ -1,8 +1,11 @@
 import React from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/theme';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp
+} from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Header() {
@@ -10,7 +13,7 @@ export default function Header() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar translucent backgroundColor={COLORS.background} barStyle="light-content" />
+      <StatusBar translucent={false} backgroundColor={COLORS.background} barStyle="light-content" />
       <View style={styles.header}>
         <TouchableOpacity style={styles.menuButton} onPress={() => navigation.openDrawer()}>
           <Ionicons name="menu" size={wp('6%')} color={COLORS.text.primary} />
@@ -26,24 +29,24 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.background,
+  
+    backgroundColor: COLORS.primary,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: wp('4%'),
-    paddingVertical: wp('3%'),
+    padding: wp('4%'),
     backgroundColor: COLORS.background,
   },
   logo: {
-    width: wp('18%'),
+    width: wp('20%'),
     height: wp('8%'),
   },
   menuButton: {
-    padding: wp('1.5%'),
+    padding: wp('2%'),
   },
   searchButton: {
-    padding: wp('1.5%'),
+    padding: wp('2%'),
   },
 });

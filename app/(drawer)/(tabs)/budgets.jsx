@@ -81,10 +81,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  content: {
-    flex: 1,
-    
-  },
+ 
   summary: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -116,15 +113,7 @@ const styles = StyleSheet.create({
   budgetsList: {
     paddingHorizontal: wp('4%')
   },
-  budgetItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: wp('4%'),
-    backgroundColor: COLORS.lightbackground,
-    borderRadius: wp('3%'),
-    marginBottom: wp('3%')
-  },
+
   budgetInfo: {
     flexDirection: 'row',
     alignItems: 'center'
@@ -171,8 +160,17 @@ const styles = StyleSheet.create({
     padding: wp('4%'),
     backgroundColor: COLORS.lightbackground,
     borderRadius: wp('3%'),
-   margin: wp('4%')
-
+    marginTop: wp('5%'),
+    marginBottom: wp('5%')
+  },
+  budgetItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: wp('4%'),
+    backgroundColor: COLORS.lightbackground,
+    borderRadius: wp('3%'),
+    marginBottom: wp('3%')
   },
   selectedCategoryTitle: {
     fontSize: wp('5%'),

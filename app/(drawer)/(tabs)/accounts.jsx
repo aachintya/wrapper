@@ -8,7 +8,7 @@ import Header from '../../../components/commonheader';
 
 const AccountsScreen = () => {
   const navigation = useNavigation();
-
+  
   const accounts = [
     { id: 1, type: 'Card', balance: 0.00, icon: 'card-outline' },
     { id: 2, type: 'Cash', balance: 0.00, icon: 'cash-outline' },
@@ -41,7 +41,7 @@ const AccountsScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
+        <Header />
       <ScrollView style={styles.content}>
         <View style={styles.totalBalance}>
           <Text style={styles.totalBalanceLabel}>All Accounts</Text>
@@ -78,6 +78,7 @@ const AccountsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    
     backgroundColor: COLORS.background,
   },
   content: {
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
   totalBalance: {
     alignItems: 'center',
     padding: wp('4%'),
+    backgroundColor: COLORS.background
   },
   totalBalanceLabel: {
     fontSize: wp('4%'),
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
   summary: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: wp('4%'),
+    padding: wp('4%'),
     backgroundColor: COLORS.background,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.lightbackground
@@ -110,6 +112,7 @@ const styles = StyleSheet.create({
   summaryLabel: {
     fontSize: wp('3%'),
     color: COLORS.text.secondary,
+    marginBottom: hp('0.5%')
   },
   summaryAmount: {
     fontSize: wp('4%'),
@@ -119,12 +122,11 @@ const styles = StyleSheet.create({
     fontSize: wp('5%'),
     fontWeight: '500',
     color: COLORS.text.primary,
-    paddingHorizontal: wp('4%'),
-    paddingVertical: wp('2%')
+    padding: wp('4%'),
+    paddingBottom: wp('2%')
   },
   accountsList: {
-    paddingHorizontal: wp('4%'),
-    paddingBottom: wp('2%'),
+    padding: wp('4%')
   },
   accountCard: {
     flexDirection: 'row',
@@ -155,6 +157,7 @@ const styles = StyleSheet.create({
     fontSize: wp('4.5%'),
     color: COLORS.text.primary,
     fontWeight: '500',
+    marginBottom: hp('0.5%')
   },
   accountBalance: {
     fontSize: wp('4%'),

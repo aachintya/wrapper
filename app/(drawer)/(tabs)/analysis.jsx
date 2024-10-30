@@ -58,7 +58,13 @@ const Analysis = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-<Header/>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
+
+      <Header/>
 
       <ScrollView style={styles.content}>
         <View style={styles.chartContainer}>

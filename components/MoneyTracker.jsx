@@ -173,7 +173,9 @@ const MoneyTracker = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <Header/>
+   <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      <Header/>
 
       <View style={styles.monthNav}>
         <TouchableOpacity>
