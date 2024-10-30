@@ -1,13 +1,48 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/theme';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp
 } from 'react-native-responsive-screen';
+import ExpenseCalculator from './ExpenseCalculator';
+import TransactionRecord from './TransactionRecord';
 
 const MoneyTracker = () => {
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+  const [summaryData, setSummaryData] = useState({
+    expense: 0,
+    income: 0,
+    total: 0
+  });
+
+  useEffect(() => {
+    const expense = transactions
+      .filter(t => t.type === 'EXPENSE')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    const income = transactions
+      .filter(t => t.type === 'INCOME')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    setSummaryData({
+      expense,
+      income,
+      total: income - expense
+    });
+  }, [transactions]);
+
+  const handleSaveTransaction = (transactionData) => {
+    const newTransaction = {
+      id: Date.now(),
+      ...transactionData
+    };
+    setTransactions([newTransaction, ...transactions]);
+    setShowCalculator(false);
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -104,8 +139,33 @@ const MoneyTracker = () => {
     addButtonText: {
       fontSize: wp('8%'),
       color: COLORS.whiteBg
+    },
+    transactionList: {
+      flex: 1,
+      backgroundColor: COLORS.background
     }
   });
+
+  const renderContent = () => {
+    if (transactions.length === 0) {
+      return (
+        <View style={styles.emptyState}>
+          <Ionicons name="document-text-outline" size={wp('12%')} color={COLORS.text.secondary} />
+          <Text style={styles.emptyStateText}>
+            No record in this month. Tap + to add new expense or income.
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.transactionList}>
+        {transactions.map(transaction => (
+          <TransactionRecord key={transaction.id} transaction={transaction} />
+        ))}
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -138,30 +198,46 @@ const MoneyTracker = () => {
       <View style={styles.summary}>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryLabel}>EXPENSE</Text>
-          <Text style={[styles.summaryAmount, { color: '#ff6b6b' }]}>₹0.00</Text>
+          <Text style={[styles.summaryAmount, { color: '#ff6b6b' }]}>
+            ₹{summaryData.expense.toFixed(2)}
+          </Text>
         </View>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryLabel}>INCOME</Text>
-          <Text style={[styles.summaryAmount, { color: '#51cf66' }]}>₹0.00</Text>
+          <Text style={[styles.summaryAmount, { color: '#51cf66' }]}>
+            ₹{summaryData.income.toFixed(2)}
+          </Text>
         </View>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryLabel}>TOTAL</Text>
-          <Text style={[styles.summaryAmount, { color: '#51cf66' }]}>₹0.00</Text>
+          <Text style={[styles.summaryAmount, { 
+            color: summaryData.total >= 0 ? '#51cf66' : '#ff6b6b' 
+          }]}>
+            ₹{summaryData.total.toFixed(2)}
+          </Text>
         </View>
       </View>
 
-      {/* empty state */}
-      <View style={styles.emptyState}>
-        <Ionicons name="document-text-outline" size={wp('12%')} color={COLORS.text.secondary} />
-        <Text style={styles.emptyStateText}>
-          No record in this month. Tap + to add new expense or income.
-        </Text>
-      </View>
+      {renderContent()}
 
-      {/* floating action button */}
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity 
+        style={styles.addButton}
+        onPress={() => setShowCalculator(true)}
+      >
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
+
+      <Modal
+        visible={showCalculator}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowCalculator(false)}
+      >
+        <ExpenseCalculator
+          onClose={() => setShowCalculator(false)}
+          onSave={handleSaveTransaction}
+        />
+      </Modal>
     </SafeAreaView>
   );
 };
