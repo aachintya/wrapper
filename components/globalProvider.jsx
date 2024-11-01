@@ -1,6 +1,7 @@
 import React, { createContext, useReducer, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format, parseISO, addMonths, subMonths } from 'date-fns';
+import i18next from 'i18next';
 
 const STORAGE_KEY = 'APP_STATE';
 
@@ -11,13 +12,35 @@ const initialState = {
         income: 0,
         total: 0
     },
-    currentMonth: new Date().toISOString() // Store as ISO string
+    currentMonth: new Date().toISOString(),
+    language: 'en', // Default to 'en' for English language code
+    theme: 'light',
+    fontLoaded: false,
+    hasLaunched: false
 };
 
 const globalReducer = (state, action) => {
     let newState;
     
     switch (action.type) {
+        case 'SET_FONT_LOADED':
+            return {
+                ...state,
+                fontLoaded: action.payload
+            };
+
+        case 'SET_HAS_LAUNCHED':
+            return {
+                ...state,
+                hasLaunched: action.payload
+            };
+
+        case 'SET_THEME':
+            return {
+                ...state,
+                theme: action.payload
+            };
+
         case 'ADD_TRANSACTION':
             const updatedTransactions = [...state.transactions, action.payload];
             const expense = updatedTransactions
@@ -67,6 +90,12 @@ const globalReducer = (state, action) => {
                 currentMonth: new Date(action.payload).toISOString() 
             };
 
+        case 'SET_LANGUAGE':
+            return {
+                ...state,
+                language: action.payload
+            };
+
         case 'DELETE_TRANSACTION':
             const filteredTransactions = state.transactions.filter(t => t.id !== action.payload);
             const newExpense = filteredTransactions
@@ -86,31 +115,31 @@ const globalReducer = (state, action) => {
                 }
             };
 
-            case 'EDIT_TRANSACTION':
-                const transactionIndex = state.transactions.findIndex(t => t.id === action.payload.id);
-                if (transactionIndex >= 0) {
-                    const transactionsCopy = [...state.transactions];
-                    transactionsCopy[transactionIndex] = action.payload;
-                    
-                    const updatedExpense = transactionsCopy
-                        .filter(t => t.type === 'EXPENSE')
-                        .reduce((sum, t) => sum + t.amount, 0);
-                    const updatedIncome = transactionsCopy
-                        .filter(t => t.type === 'INCOME')
-                        .reduce((sum, t) => sum + t.amount, 0);
-    
-                    newState = {
-                        ...state,
-                        transactions: transactionsCopy,
-                        summary: {
-                            expense: updatedExpense,
-                            income: updatedIncome,
-                            total: updatedIncome - updatedExpense
-                        }
-                    };
-                    return newState;
-                }
-                return state;
+        case 'EDIT_TRANSACTION':
+            const transactionIndex = state.transactions.findIndex(t => t.id === action.payload.id);
+            if (transactionIndex >= 0) {
+                const transactionsCopy = [...state.transactions];
+                transactionsCopy[transactionIndex] = action.payload;
+                
+                const updatedExpense = transactionsCopy
+                    .filter(t => t.type === 'EXPENSE')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                const updatedIncome = transactionsCopy
+                    .filter(t => t.type === 'INCOME')
+                    .reduce((sum, t) => sum + t.amount, 0);
+
+                newState = {
+                    ...state,
+                    transactions: transactionsCopy,
+                    summary: {
+                        expense: updatedExpense,
+                        income: updatedIncome,
+                        total: updatedIncome - updatedExpense
+                    }
+                };
+                return newState;
+            }
+            return state;
 
         default:
             return state;
@@ -129,6 +158,47 @@ export const GlobalProvider = ({ children }) => {
     useEffect(() => {
         saveState(state);
     }, [state]);
+
+    useEffect(() => {
+        const persistLanguage = async () => {
+            try {
+                if (state.language) {
+                    await AsyncStorage.setItem('APP_LANGUAGE', state.language);
+                    console.log('Language persisted:', state.language);
+                }
+            } catch (error) {
+                console.error('Error saving language preference:', error);
+            }
+        };
+        
+        persistLanguage();
+    }, [state.language]);
+
+    useEffect(() => {
+        const loadSavedLanguage = async () => {
+            try {
+                const savedLanguage = await AsyncStorage.getItem('APP_LANGUAGE');
+                if (savedLanguage) {
+                    dispatch({
+                        type: 'SET_LANGUAGE',
+                        payload: savedLanguage
+                    });
+                    console.log('Loaded saved language:', savedLanguage);
+                }
+            } catch (error) {
+                console.error('Error loading language preference:', error);
+            }
+        };
+        
+        loadSavedLanguage();
+    }, []);
+
+    useEffect(() => {
+        if (state.language) {
+            i18next.changeLanguage(state.language);
+            changeLanguage(state.language);
+        }
+    }, [state.language]);
 
     const loadSavedState = async () => {
         try {
@@ -153,7 +223,6 @@ export const GlobalProvider = ({ children }) => {
     };
 
     const onSave = (transactionData) => {
-        // If the transaction has an id and isUpdate flag, it's an edit
         if (transactionData.id && transactionData.isUpdate) {
             dispatch({
                 type: 'EDIT_TRANSACTION',
@@ -164,7 +233,6 @@ export const GlobalProvider = ({ children }) => {
                 }
             });
         } else {
-            // It's a new transaction
             dispatch({
                 type: 'ADD_TRANSACTION',
                 payload: {
@@ -180,7 +248,40 @@ export const GlobalProvider = ({ children }) => {
         }
     };
 
-    // Helper function to format dates for display
+
+    const changeLanguage = async (language) => {
+        try {
+            dispatch({
+                type: 'SET_LANGUAGE',
+                payload: language
+            });
+            console.log('Language changed successfully to:', language);
+        } catch (error) {
+            console.error('Error changing language:', error);
+        }
+    };
+
+    const setTheme = (theme) => {
+        dispatch({
+            type: 'SET_THEME',
+            payload: theme
+        });
+    };
+
+    const setFontLoaded = (loaded) => {
+        dispatch({
+            type: 'SET_FONT_LOADED',
+            payload: loaded
+        });
+    };
+
+    const setHasLaunched = (launched) => {
+        dispatch({
+            type: 'SET_HAS_LAUNCHED',
+            payload: launched
+        });
+    };
+
     const formatDate = (dateString) => {
         try {
             return format(new Date(dateString), 'yyyy-MM-dd');
@@ -195,14 +296,17 @@ export const GlobalProvider = ({ children }) => {
             state, 
             dispatch, 
             onSave,
-            formatDate // Expose formatDate function to components
+            formatDate,
+            changeLanguage,
+            setTheme,
+            setFontLoaded,
+            setHasLaunched
         }}>
             {children}
         </GlobalContext.Provider>
     );
 };
 
-// Hook 
 export const useGlobalContext = () => {
     const context = useContext(GlobalContext);
     if (!context) {

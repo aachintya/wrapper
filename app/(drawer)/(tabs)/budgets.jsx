@@ -1,27 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '../../../constants/theme';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp
-} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Header from '../../../components/commonheader';
+import { useTranslation } from 'react-i18next';
+import { useGlobalContext } from '../../../components/globalProvider';
 
 const BudgetsScreen = () => {
-  const [budgets, setBudgets] = useState([
-    { id: 'food', title: 'Food & Grocery', icon: 'shopping-basket', limit: 0, spent: 0.00, budgeted: false },
-    { id: 'bills', title: 'Bills', icon: 'file-invoice-dollar', limit: 0, spent: 0.00, budgeted: false },
-    { id: 'car', title: 'Car', icon: 'car', limit: 0, spent: 0.00, budgeted: false },
-    { id: 'clothing', title: 'Clothing', icon: 'tshirt', limit: 0, spent: 0.00, budgeted: false },
-    { id: 'education', title: 'Education', icon: 'graduation-cap', limit: 0, spent: 0.00, budgeted: false },
-  ]);
+  const { t, i18n } = useTranslation();
+  const { state } = useGlobalContext();
 
-  const [selectedCategory, setSelectedCategory] = useState(budgets[0]); // Start with 'Baby' category
+  // Define the budgets with keys for translation
+  const initialBudgets = [
+    { id: 'food', titleKey: 'Food & Grocery', icon: 'shopping-basket', limit: 0, spent: 0.00, budgeted: false },
+    { id: 'bills', titleKey: 'Bills', icon: 'file-invoice-dollar', limit: 0, spent: 0.00, budgeted: false },
+    { id: 'car', titleKey: 'Car', icon: 'car', limit: 0, spent: 0.00, budgeted: false },
+    { id: 'clothing', titleKey: 'Clothing', icon: 'tshirt', limit: 0, spent: 0.00, budgeted: false },
+    { id: 'education', titleKey: 'Education', icon: 'graduation-cap', limit: 0, spent: 0.00, budgeted: false },
+  ];
+
+  const [budgets, setBudgets] = useState(initialBudgets.map(budget => ({
+    ...budget,
+    title: t(budget.titleKey), // Translate the title here
+  })));
+
+  const [selectedCategory, setSelectedCategory] = useState(budgets[0]); 
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
   };
+
+  useEffect(() => {
+    if (state.language && i18n.language !== state.language) {
+      i18n.changeLanguage(state.language);
+      setBudgets(initialBudgets.map(budget => ({
+        ...budget,
+        title:t('budget.titleKey'), 
+      })));
+    } else {
+      i18n.changeLanguage('en');
+    }
+  }, [state.language]);
 
   const renderBudgetItem = (budget) => (
     <TouchableOpacity key={budget.id} onPress={() => handleCategorySelect(budget)} style={styles.budgetItem}>
@@ -31,13 +51,13 @@ const BudgetsScreen = () => {
       </View>
       {budget.budgeted ? (
         <View style={styles.budgetDetails}>
-          <Text style={styles.budgetLimit}>Limit: ₹{budget.limit.toFixed(2)}</Text>
-          <Text style={styles.budgetSpent}>Spent: ₹{budget.spent.toFixed(2)}</Text>
-          <Text style={styles.budgetRemaining}>Remaining: ₹{(budget.limit - budget.spent).toFixed(2)}</Text>
+          <Text style={styles.budgetLimit}>{t("Limit")}: ₹{budget.limit.toFixed(2)}</Text>
+          <Text style={styles.budgetSpent}>{t('Spent')}: ₹{budget.spent.toFixed(2)}</Text>
+          <Text style={styles.budgetRemaining}>{t('Remaining')}: ₹{(budget.limit - budget.spent).toFixed(2)}</Text>
         </View>
       ) : (
         <TouchableOpacity style={styles.setBudgetButton}>
-          <Text style={styles.setBudgetText}>SET BUDGET</Text>
+          <Text style={styles.setBudgetText}>{t("SET BUDGET")}</Text>
         </TouchableOpacity>
       )}
     </TouchableOpacity>
@@ -49,26 +69,26 @@ const BudgetsScreen = () => {
       <ScrollView style={styles.content}>
         <View style={styles.summary}>
           <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>TOTAL BUDGET</Text>
+            <Text style={styles.summaryLabel}>{t("TOTAL BUDGET")}</Text>
             <Text style={styles.summaryValue}>₹{budgets.reduce((total, budget) => total + budget.limit, 0).toFixed(2)}</Text>
           </View>
           <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>TOTAL SPENT</Text>
+            <Text style={styles.summaryLabel}>{t("TOTAL SPENT")}</Text>
             <Text style={[styles.summaryValue, { color: '#ff6b6b' }]}>₹{budgets.reduce((total, budget) => total + budget.spent, 0).toFixed(2)}</Text>
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Budgeted categories: Oct, 2024</Text>
+        <Text style={styles.sectionTitle}>{t("Budgeted categories")}: Oct, 2024</Text>
         <View style={styles.budgetsList}>
           {budgets.map(renderBudgetItem)}
         </View>
 
         {selectedCategory && (
           <View style={styles.selectedCategoryDetails}>
-            <Text style={styles.selectedCategoryTitle}>Details for {selectedCategory.title}:</Text>
-            <Text style={styles.selectedCategoryText}>Limit: ₹{selectedCategory.limit.toFixed(2)}</Text>
-            <Text style={styles.selectedCategoryText}>Spent: ₹{selectedCategory.spent.toFixed(2)}</Text>
-            <Text style={styles.selectedCategoryText}>Remaining: ₹{(selectedCategory.limit - selectedCategory.spent).toFixed(2)}</Text>
+            <Text style={styles.selectedCategoryTitle}>{t("Details for")}: {selectedCategory.title}:</Text>
+            <Text style={styles.selectedCategoryText}>{t("Limit")}: ₹{selectedCategory.limit.toFixed(2)}</Text>
+            <Text style={styles.selectedCategoryText}>{t("Spent")}: ₹{selectedCategory.spent.toFixed(2)}</Text>
+            <Text style={styles.selectedCategoryText}>{t("Remaining")}: ₹{(selectedCategory.limit - selectedCategory.spent).toFixed(2)}</Text>
           </View>
         )}
       </ScrollView>
@@ -81,7 +101,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
- 
   summary: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -113,7 +132,6 @@ const styles = StyleSheet.create({
   budgetsList: {
     paddingHorizontal: wp('4%')
   },
-
   budgetInfo: {
     flexDirection: 'row',
     alignItems: 'center'

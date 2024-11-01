@@ -10,6 +10,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { GlobalProvider } from '../components/globalProvider';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../utils/language/i18config';
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -50,6 +53,7 @@ export default function RootLayout() {
   }
 
   return (
+    <I18nextProvider i18n={i18n}>
     <GlobalProvider>
     <GestureHandlerRootView style={styles.container}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -61,6 +65,7 @@ export default function RootLayout() {
       </ThemeProvider>
     </GestureHandlerRootView>
     </GlobalProvider>
+    </I18nextProvider>
     
   );
 }
