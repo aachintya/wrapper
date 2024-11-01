@@ -64,6 +64,7 @@ const CustomDrawerContent = (props) => {
             <MaterialIcons name="help-outline" size={wp("6%")} color={'#000000'} />
           )}
           onPress={() => Linking.openURL("https://forms.gle/5iJKWrfCXMsviTiL8")}
+          labelStyle={{ color: COLORS.background }}
         />
         <DrawerItem
           label="Feedback"
@@ -71,16 +72,19 @@ const CustomDrawerContent = (props) => {
             <MaterialIcons name="feedback" size={wp("6%")} color={'#000000'} />
           )}
           onPress={() => Linking.openURL("https://forms.gle/5iJKWrfCXMsviTiL8")}
+          labelStyle={{ color: COLORS.background }}
         />
         <DrawerItem
           label="Languages"
           icon={() => <Ionicons name="language" size={wp("6%")} color={'#000000'} />}
           onPress={() => console.log("Language options pressed")}
+          labelStyle={{ color: COLORS.background }}
         />
         <DrawerItem
           label="Export Data"
           icon={() => <Ionicons name="exit" size={wp("6%")} color={'#000000'} />}
           onPress={() => console.log("Export options pressed")}
+          labelStyle={{ color: COLORS.background }}
         />
         <DrawerItem
           label="Logout"
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: wp("20%"),
     height: wp("20%"),
-    resizeMode:"contain",
+    resizeMode: "contain",
     borderRadius: wp("10%"),
     marginBottom: hp("1%"),
     backgroundColor: "#fff",
