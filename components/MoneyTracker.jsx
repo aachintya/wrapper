@@ -39,9 +39,9 @@ import {
 } from "date-fns";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import Header from "./commonheader";
 const MoneyTracker = () => {
-  const { onSave, state, dispatch, convertAmount } = useGlobalContext();
+  const { onSave, state, dispatch, convertAmount, loadExpensesFromDB } = useGlobalContext();
   const navigation = useNavigation();
   const [showCalculator, setShowCalculator] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
@@ -57,6 +57,11 @@ const MoneyTracker = () => {
       i18n.changeLanguage(state.language);
     }
   }, [state.language]);
+
+  // Load expenses from the database when the component mounts
+  useEffect(() => {
+    loadExpensesFromDB();
+  }, []);
 
   // Filter transactions for current month and search term
   const currentMonthTransactions = state.transactions.filter((transaction) => {
@@ -293,42 +298,8 @@ const MoneyTracker = () => {
         barStyle="light-content"
       />
       {/* Header */}
-      <View style={styles.headerContainer}>
-        <View style={styles.header}>
-          {/* Sidebar Icon */}
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <Ionicons
-              name="menu"
-              size={wp("6%")}
-              color={COLORS.text.primary}
-            />
-          </TouchableOpacity>
+      <Header searchIconShown={true} />
 
-          {/* App Logo */}
-          <Image
-            source={require("../assets/images/logo.png")} // Make sure the path to your logo is correct
-            style={styles.logo}
-          />
-          {/* Search Icon */}
-          <TouchableOpacity onPress={() => setShowSearchBar(!showSearchBar)}>
-            <Ionicons
-              name={showSearchBar ? "close" : "search"}
-              size={wp("6%")}
-              color={COLORS.text.primary}
-            />
-          </TouchableOpacity>
-        </View>
-        {showSearchBar && (
-          <View style={styles.searchBar}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder={t("Search transactions")}
-              value={searchTerm}
-              onChangeText={setSearchTerm}
-            />
-          </View>
-        )}
-      </View>
 
       {/* Month Navigation */}
       <View style={styles.monthNav}>
