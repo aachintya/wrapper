@@ -13,64 +13,66 @@
       "backgroundColor": "#fff"
     },
     "ios": {
-  "icon": "./assets/images/logo.png",
-  "supportsTablet": true,
-  "bundleIdentifier": "com.Kharshit801.wrapper",
-  "buildNumber": "1.0.0",
-  "infoPlist": {
-    "LSApplicationQueriesSchemes": [
-      "gpay",    
-      "phonepe",
-      "paytm",
-      "bhim",
-      "upi"
-    ],
-    "NSCameraUsageDescription": "This app needs camera access to scan QR codes for payments",
-    "CFBundleURLTypes": [
-      {
-        "CFBundleURLSchemes": [
-          "wrapper"
-        ]
+      "icon": "./assets/images/logoWrapper.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.Kharshit801.wrapper",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "gpay",
+          "phonepe",
+          "paytm",
+          "bhim",
+          "upi"
+        ],
+        "NSCameraUsageDescription": "This app needs camera access to scan QR codes for payments",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "wrapper"
+            ]
+          }
+        ],
+        "NSFaceIDUsageDescription": "This app uses Face ID to secure your data."
       }
-    ]
-  }
-},
-  "android": {
-  "package": "com.Kharshit801.wrapper",
-  "versionCode": 1,
-  "adaptiveIcon": {
-    "foregroundImage": "./assets/images/logo.png",
-    "backgroundColor": "#1f1f1f"
-  },
-  "permissions": [
-    "QUERY_ALL_PACKAGES"
-  ],
-  "queries": {
-    "packages": [
-      "com.google.android.apps.nbu.paisa.user",
-      "net.one97.paytm",
-      "com.phonepe.app",
-      "in.org.npci.upiapp"
-    ]
-  },
-  "intentFilters": [
-    {
-      "action": "VIEW",
-      "data": [
+    },
+    "android": {
+      "package": "com.Kharshit801.wrapper",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#1f1f1f"
+      },
+      "permissions": [
+        "QUERY_ALL_PACKAGES",
+        "android.permission.USE_FINGERPRINT"
+      ],
+      "queries": {
+        "packages": [
+          "com.google.android.apps.nbu.paisa.user",
+          "net.one97.paytm",
+          "com.phonepe.app",
+          "in.org.npci.upiapp"
+        ]
+      },
+      "intentFilters": [
         {
-          "scheme": "upi"
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "upi"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ],
-      "category": [
-        "BROWSABLE",
-        "DEFAULT"
-      ]
-    }
-  ],
-  "notifications": {
-    "icon": "./assets/images/logo.png"
-  }
-},
+      "notifications": {
+        "icon": "./assets/images/logo.png"
+      }
+    },
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -80,13 +82,18 @@
       "expo-router",
       [
         "expo-build-properties",
-        
         {
           "android": {
             "compileSdkVersion": 34,
             "targetSdkVersion": 34,
             "buildToolsVersion": "34.0.0"
           }
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ]
     ],
