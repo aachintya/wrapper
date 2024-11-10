@@ -1,5 +1,3 @@
-// components/MoneyTracker.js
-
 import ReceiptParser from "../utils/ReceiptParser";
 import LottieView from "lottie-react-native";
 import React, { useState, useEffect } from "react";
@@ -19,9 +17,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../constants/theme";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
 import { formatCurrency, convertAmount } from "../utils/currencyService";
-
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -38,10 +34,9 @@ import {
   isWithinInterval,
 } from "date-fns";
 import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Header from "./commonheader";
+
 const MoneyTracker = () => {
-  const { onSave, state, dispatch, convertAmount, loadExpensesFromDB } = useGlobalContext();
+  const { onSave, state, dispatch, convertAmount,loadExpensesFromDB } = useGlobalContext();
   const navigation = useNavigation();
   const [showCalculator, setShowCalculator] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
@@ -51,17 +46,17 @@ const MoneyTracker = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    loadExpensesFromDB();
+
+  },[]);
+
+  useEffect(() => {
     if (state.language && i18n.language !== state.language) {
       i18n.changeLanguage(state.language);
     } else {
       i18n.changeLanguage(state.language);
     }
   }, [state.language]);
-
-  // Load expenses from the database when the component mounts
-  useEffect(() => {
-    loadExpensesFromDB();
-  }, []);
 
   // Filter transactions for current month and search term
   const currentMonthTransactions = state.transactions.filter((transaction) => {
@@ -292,14 +287,43 @@ const MoneyTracker = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="light-content"
-      />
+      <StatusBar translucent={false} backgroundColor={COLORS.background} barStyle="light-content" />
       {/* Header */}
-      <Header searchIconShown={true} />
+      <View style={styles.header}>
+        {/* Left side: Menu button */}
+        <TouchableOpacity style={styles.menuButton} onPress={() => navigation.openDrawer()}>
+          <Ionicons name="menu" size={wp('6%')} color={COLORS.text.primary} />
+        </TouchableOpacity>
 
+        {/* Center: Logo */}
+        <View style={styles.logoContainer}>
+          <Image source={require("../assets/images/logo.png")} style={styles.logo} resizeMode="contain" />
+        </View>
+
+        {/* Right side: Search icon or placeholder for consistent spacing */}
+        {showSearchBar ? (
+          <TouchableOpacity onPress={() => setShowSearchBar(false)} style={styles.searchButton}>
+            <Ionicons name="close" size={wp('6%')} color={COLORS.text.primary} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => setShowSearchBar(true)} style={styles.searchButton}>
+            <Ionicons name="search" size={wp('6%')} color={COLORS.text.primary} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Search Input */}
+      {showSearchBar && (
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search transactions..."
+            placeholderTextColor="white" // Set placeholder text color to white
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+          />
+        </View>
+      )}
 
       {/* Month Navigation */}
       <View style={styles.monthNav}>
@@ -430,44 +454,41 @@ const MoneyTracker = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
-
-  headerContainer: {
-    backgroundColor: COLORS.backgroundColor,
-  },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: wp("4%"),
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: wp('4%'),
+    backgroundColor: COLORS.background,
   },
-  headerTitle: {
-    fontSize: wp("5%"),
-    fontWeight: "bold",
-    color: COLORS.text.primary,
+  menuButton: {
+    width: wp('10%'), // Fixed width to keep the layout stable
+    alignItems: 'center',
+  },
+  logoContainer: {
     flex: 1,
-    textAlign: "center",
+    alignItems: 'center',
   },
   logo: {
-    width: wp("20%"),
-    height: wp("8%"),
-    flex: 1,
-    resizeMode: "contain",
-    marginLeft: wp("2%"),
+    width: wp('20%'),
+    height: wp('8%'),
   },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: wp("4%"),
-    paddingBottom: hp("1%"),
+  searchButton: {
+    width: wp('10%'), // Fixed width to keep the layout stable
+    alignItems: 'center',
+  },
+  searchContainer: {
+    padding: wp('4%'),
+    backgroundColor: COLORS.lightbackground,
   },
   searchInput: {
-    flex: 1,
-    height: hp("5%"),
-    backgroundColor: COLORS.lightbackground,
-    borderRadius: wp("2%"),
-    paddingHorizontal: wp("2%"),
-    color: COLORS.text.primary, // Changed from COLORS.lightbackground to COLORS.text.primary
+    height: hp('6%'),
+    borderColor: COLORS.text.secondary,
+    borderWidth: 1,
+    color: COLORS.text.primary,
+    placeholderTextColor: 'white', // Added to set placeholder text color to white
+    borderRadius: 5,
+    paddingHorizontal: wp('2%'),
   },
-
   monthNav: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -506,17 +527,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     minHeight: hp("50%"),
   },
-
   animation: {
     width: wp(50),
     height: wp(50),
-  },
-
-  emptyStateText: {
-    color: COLORS.text.secondary,
-    textAlign: "center",
-    marginTop: hp("2%"),
-    fontSize: wp("4%"),
   },
   addButton: {
     position: "absolute",
@@ -538,7 +551,6 @@ const styles = StyleSheet.create({
     width: wp("14%"),
     height: wp("14%"),
   },
-  addButtonText: { fontSize: wp("8%"), color: "#fff", fontWeight: "bold" },
 });
 
 export default MoneyTracker;

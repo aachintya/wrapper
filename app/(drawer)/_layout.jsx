@@ -140,11 +140,10 @@ const CustomDrawerContent = (props) => {
         />
         <View style={styles.profileContainer}>
           <Image
-            source={require("../../assets/images/logoBlack.png")}
+            source={require("../../assets/images/logoWrapper.png")}
             style={styles.profileImage}
           />
           <Text style={styles.userName}>{t('TeamAuxin')}</Text>
-          <Text style={styles.userEmail}>{t('Email')}</Text>
         </View>
         <View style={styles.drawerItemsContainer}>
           {props.state.routes
